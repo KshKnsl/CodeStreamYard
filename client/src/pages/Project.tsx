@@ -14,44 +14,18 @@ const Project = () => {
   const [filesData, setFilesData] = useState<any>(null);
   const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState<string>("");
-  const [openFiles, setOpenFiles] = useState<string[]>([]);
-  const [activeFile, setActiveFile] = useState<string | null>(null);
+  const [currentFile, setCurrentFile] = useState<string | null>(null);
 
   const handleFileOpen = (filePath: string) => {
-    if (!openFiles.includes(filePath)) {
-      setOpenFiles((prev) => [...prev, filePath]);
-    }
-    setActiveFile(filePath);
+    setCurrentFile(filePath);
   };
 
-  const handleFileClose = (filePath: string) => {
-    setOpenFiles((prev) => {
-      const newOpenFiles = prev.filter((f) => f !== filePath);
-      if (activeFile === filePath && newOpenFiles.length > 0) {
-        setActiveFile(newOpenFiles[newOpenFiles.length - 1]);
-      } else if (activeFile === filePath) {
-        setActiveFile(null);
-      }
-      return newOpenFiles;
-    });
+  const handleFileClose = () => {
+    setCurrentFile(null);
   };
 
   const handleFileSelect = (filePath: string) => {
-    if (openFiles.includes(filePath)) {
-      setActiveFile(filePath);
-    } else {
-      if (openFiles.length === 0) {
-        setOpenFiles([filePath]);
-      } else {
-        setOpenFiles((prev) => {
-          const newFiles = [...prev];
-          const activeIndex = activeFile ? newFiles.indexOf(activeFile) : 0;
-          newFiles[activeIndex] = filePath;
-          return newFiles;
-        });
-      }
-      setActiveFile(filePath);
-    }
+    setCurrentFile(filePath);
   };
 
   const fetchProjectFiles = async () => {
@@ -109,8 +83,6 @@ const Project = () => {
                     patharray={filesData.localPath.patharray}
                     onFileOpen={handleFileOpen}
                     onFileSelect={handleFileSelect}
-                    onReloadFiles={fetchProjectFiles}
-                    projectId={id}
                   />
                 ) : (
                   <div className="p-4 text-gray-500 dark:text-[#7d8590]">No files available</div>
@@ -126,9 +98,7 @@ const Project = () => {
               <ResizablePanel defaultSize={70} minSize={30}>
                 <div className="h-full bg-white dark:bg-black">
                   <CodeArea
-                    openFiles={openFiles}
-                    activeFile={activeFile}
-                    onFileSelect={handleFileSelect}
+                    openFiles={currentFile ? [currentFile] : []}
                     onFileClose={handleFileClose}
                     projectId={id}
                   />

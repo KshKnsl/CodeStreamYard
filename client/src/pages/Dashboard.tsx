@@ -9,8 +9,7 @@ import { Plus, Terminal, Settings, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DotPattern } from "@/components/ui/dot-pattern";
 import Loading from "@/components/ui/Loading";
-import GithubRepoSelector from "@/components/GithubRepoSelector";
-import NewProjectForm from "@/components/NewProjectForm";
+import ProjectCreator from "@/components/ProjectCreator";
 import Setting from "@/components/Setting";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -34,38 +33,17 @@ interface Application {
   ownerId: string;
 }
 
-interface Repository {
-  id: number;
-  name: string;
-  full_name: string;
-  private: boolean;
-  description: string | null;
-  html_url: string;
-  languageUrl: string;
-  default_branch: string;
-  branches_url: string;
-  url: string;
-  avatar_url?: string;
-  commitHistory: string;
-}
-
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<"apps" | "settings">("apps");
   const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
-  const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null);
   const [applications, setApplications] = useState<Application[]>([]);
   const [loadingApps, setLoadingApps] = useState(false);
 
   const SERVER_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:3000";
   const navigate = useNavigate();
 
-  const handleRepoSelect = (repo: Repository) => {
-    setSelectedRepo(repo);
-  };
-
-  const handleProjectSubmit: () => Promise<void> = async () => {
+  const handleProjectSubmit = async () => {
     setIsProjectDialogOpen(false);
-    setSelectedRepo(null);
     fetchApplications();
   };
 
@@ -115,19 +93,9 @@ export default function Dashboard() {
               </DialogTrigger>
               <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
-                  <DialogTitle>
-                    {selectedRepo ? "Configure Your Project" : "Select a Repository"}
-                  </DialogTitle>
+                  <DialogTitle>Create New Project</DialogTitle>
                 </DialogHeader>
-                {selectedRepo ? (
-                  <NewProjectForm
-                    repository={selectedRepo}
-                    onSubmit={handleProjectSubmit}
-                    onBack={() => setSelectedRepo(null)}
-                  />
-                ) : (
-                  <GithubRepoSelector onSelect={handleRepoSelect} />
-                )}
+                <ProjectCreator onSubmit={handleProjectSubmit} />
               </DialogContent>
             </Dialog>
           </div>

@@ -42,7 +42,7 @@ const App = () => {
             <img
               src={codeStreamYardLogo}
               alt="CodeStreamYard Logo"
-              className="h-6 w-6 rounded-md shadow-md"
+              className="h-6 w-6 rounded-md"
             />
             <span className="text-gray-600 dark:text-gray-400 text-sm ml-2 font-semibold">
               codestreamyard.web

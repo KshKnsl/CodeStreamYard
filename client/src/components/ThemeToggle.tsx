@@ -3,7 +3,9 @@ import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/ThemeContext";
 
 export function ThemeToggle({ inDropdown = false }) {
-  const { theme, setTheme } = useTheme();
+  const themeContext = useTheme();
+  if (!themeContext)    return null;
+  const { theme, setTheme } = themeContext;
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");

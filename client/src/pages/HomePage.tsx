@@ -42,11 +42,11 @@ export default function HomePage() {
               CodeStreamYard
             </span>
           </h1>
-          <div className="max-w-3xl mx-auto text-lg md:text-xl text-gray-700 dark:text-gray-300 font-medium mb-4 min-h-[3em]">
+          <div className="max-w-3xl mx-auto text-lg md:text-xl text-gray-700 dark:text-gray-300 font-medium mb-2 min-h-[3em]">
             {typedText}
             <span className="animate-pulse text-purple-500">|</span>
           </div>
-          <p className="max-w-2xl mx-auto text-base text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
+          <p className="max-w-2xl mx-auto text-base text-gray-600 dark:text-gray-400 mb-2 leading-relaxed">
             The platform for{" "}
             <span className="text-purple-600 dark:text-purple-400 font-semibold">
               live coding tutorials
@@ -54,7 +54,7 @@ export default function HomePage() {
             , <span className="text-pink-600 dark:text-pink-400 font-semibold">real-time chat</span>
             , and{" "}
             <span className="text-purple-600 dark:text-purple-400 font-semibold">
-              AI-powered code explanations
+              collaborative development
             </span>
             .
           </p>
@@ -110,9 +110,6 @@ export default function HomePage() {
             className="bg-white/20 dark:bg-black/20 backdrop-blur-sm border-2 border-purple-200 dark:border-purple-800 hover:bg-purple-50 dark:hover:bg-purple-900/20 text-purple-700 dark:text-purple-300 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 px-8 py-3">
             Watch Demo
           </Button>
-        </div>
-        <div className="text-center text-xs text-gray-500 dark:text-gray-500 mt-auto mb-4">
-          &copy; {new Date().getFullYear()} CodeStreamYard. All rights reserved.
         </div>
       </div>
     </div>
