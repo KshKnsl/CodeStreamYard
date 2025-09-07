@@ -69,8 +69,7 @@ app.use(passport.session());
 configurePassport();
 
 app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-  // Allow auth routes and root path
-  if (req.path.startsWith("/auth") || req.path === "/") {
+  if (req.path.startsWith("/auth") || req.path === "/" || req.path.startsWith("/files") || req.path.startsWith("/localCopyOfProject")) {
     return next();
   }
 

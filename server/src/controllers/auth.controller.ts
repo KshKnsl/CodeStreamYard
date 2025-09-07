@@ -1,4 +1,3 @@
-import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 import { User, UserInterface } from "../models/user";
 import { UserController } from "./user.controller";
@@ -18,19 +17,9 @@ export class AuthController {
     const user = req.user as UserInterface;
     await UserController.updateLastLogin(user.id);
     res.redirect(`${clientUrl}/dashboard`);
- 
   }
 
   static async getStatus(req: Request, res: Response): Promise<void> {
-    console.log("\n=== getStatus Request ===");
-    console.log("Session ID:", req.sessionID);
-    console.log("Session Cookie:", req.headers.cookie?.split(";").find((c) => c.trim().startsWith("connect.sid=")));
-    console.log("Session Data:", req.session);
-    console.log("Is Authenticated:", req.isAuthenticated());
-    console.log("User:", req.user);
-    console.log("Headers:", req.headers);
-    console.log("Cookies:", req.cookies);
-
     if (!req.isAuthenticated()) {
       console.log("Not authenticated - sending 401");
       res.status(401).json({
@@ -42,9 +31,7 @@ export class AuthController {
     }
 
     const user = req.user as UserInterface;
-    console.log("Authenticated user:", user);
     res.json({ message: "Authenticated", user });
-    console.log("=== getStatus End ===\n");
   }
 
   static async logout(req: Request, res: Response): Promise<void> {

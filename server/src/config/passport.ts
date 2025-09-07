@@ -18,13 +18,13 @@ export default function configurePassport(): void {
     return done(null, u);
   });
 
-  // @ts-ignore
   passport.use(
     new GitHubStrategy(
       {
         clientID: process.env.GITHUB_CLIENT_ID || "",
         clientSecret: process.env.GITHUB_CLIENT_SECRET || "",
         scope: ["user:email", "repo"],
+        passReqToCallback: true
       },
       async (at: string, rt: string, p: any, done: any) => {
         const email = p.emails[0].value;

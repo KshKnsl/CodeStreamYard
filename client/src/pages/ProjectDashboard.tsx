@@ -14,7 +14,7 @@ import {
 import { ChartPieDonutText } from "@/components/ui/donut-pie-chart";
 
 interface ProjectData {
-  _id: string;
+  id: string;
   name: string;
   repoid: string;
   logo_url: string;
@@ -108,7 +108,6 @@ const ProjectDashboard = () => {
     setMessage("");
 
     try {
-      // Save project details
       let logoUrl = project?.logo_url || "";
       if (logoFile) {
         const formData = new FormData();
@@ -122,37 +121,32 @@ const ProjectDashboard = () => {
         if (uploadData.url) logoUrl = uploadData.url;
       }
 
-      const detailsBody = { id: project?._id, name, description, logo_url: logoUrl };
-      const detailsRes = await fetch(`${SERVER_URL}/project/updateDetails`, {
+      const updateBody = { 
+        id: project?.id, 
+        name, 
+        description, 
+        logo_url: logoUrl,
+        selected_branch: selectedBranch 
+      };
+      
+      const updateRes = await fetch(`${SERVER_URL}/project/update`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(detailsBody),
+        body: JSON.stringify(updateBody),
       });
 
-      const detailsData = await detailsRes.json();
-      let success = detailsData.success;
+      const updateData = await updateRes.json();
 
-      if (selectedBranch && selectedBranch !== project?.selected_branch) {
-        const branchBody = { id: project?._id, selected_branch: selectedBranch };
-        const branchRes = await fetch(`${SERVER_URL}/project/updateBranch`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(branchBody),
-        });
-        const branchData = await branchRes.json();
-        success = success && branchData.success;
-      }
-
-      if (success) {
+      if (updateData.success) {
         setMessage("Updated successfully!");
-        if (detailsData.project) setProject(detailsData.project);
+        if (updateData.project) setProject(updateData.project);
         if (logoFile) setLogoFile(null);
       } else {
-        setMessage("Update failed");
+        setMessage("Update failed: " + (updateData.message || "Unknown error"));
       }
-    } catch {
+    } catch (error) {
+      console.error("Update error:", error);
       setMessage("Update failed");
     }
     setSaving(false);
@@ -165,7 +159,7 @@ const ProjectDashboard = () => {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ projId: project?._id }),
+        body: JSON.stringify({ projId: project?.id }),
       });
       if ((await res.json()).success) {
         navigate("/dashboard");

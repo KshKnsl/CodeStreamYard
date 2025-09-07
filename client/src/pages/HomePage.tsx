@@ -20,7 +20,7 @@ export default function HomePage() {
   }, [currentIndex, heroText]);
 
   return (
-    <div className="relative h-screen overflow-hidden flex flex-col bg-gradient-to-br from-gray-50 via-white to-purple-50 dark:from-gray-950 dark:via-black dark:to-purple-950">
+    <div className="relative h-screen overflow-hidden flex flex-col bg-gradient-to-br from-gray-50 via-white to-purple-50 dark:from-gray-950 dark:via-black dark:to-purple-950 pt-16">
       <MovingGradient
         size={700}
         blur={180}
@@ -91,9 +91,11 @@ export default function HomePage() {
               <div className="w-14 h-14 bg-purple-100 dark:bg-purple-900/50 rounded-xl flex items-center justify-center mb-4">
                 <MessageCircle className="w-8 h-8 text-purple-600 dark:text-purple-400" />
               </div>
-              <h3 className="font-bold text-lg mb-2 text-gray-900 dark:text-white">AI Powered</h3>
+              <h3 className="font-bold text-lg mb-2 text-gray-900 dark:text-white">
+                GitHub Integration
+              </h3>
               <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-                Instant code explanations and OCR-based updates during streams.
+                Import repositories directly and showcase your projects with ease.
               </p>
             </div>
           </div>

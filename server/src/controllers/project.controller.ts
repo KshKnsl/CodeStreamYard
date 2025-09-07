@@ -1,14 +1,9 @@
 import { Project } from "../models/project";
+import { User } from "../models/user";
 import { Request, Response } from "express";
-
-const genLink = (len = 5) =>
-  Array.from(
-    { length: len },
-    () =>
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"[
-        Math.floor(Math.random() * 62)
-      ]
-  ).join("");
+import fs from "fs";
+import path from "path";
+import { cloneOrPullRepo } from "../utils/cloner.util";
 export class ProjectController {
   static async createProject(req: Request, res: Response) {
     const {
@@ -53,31 +48,33 @@ export class ProjectController {
   }
 
   static async updateProject(req: Request, res: Response) {
-    const project = await Project.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.status(200).send({ success: true, message: "Project updated", project });
-  }
-
-  static async updateBranch(req: Request, res: Response) {
     const uid = (req as any).user?.id || (req as any).user?._id;
-    const { id: projId, selected_branch } = req.body;
+    const { id, name, description, logo_url, selected_branch, ...otherFields } = req.body;
+
+    const updateFields: any = {};
+
+    if (name !== undefined) updateFields.name = name;
+    if (description !== undefined) updateFields.description = description;
+    if (logo_url !== undefined) updateFields.logo_url = logo_url;
+    if (selected_branch !== undefined) updateFields.selected_branch = selected_branch;
+
+    Object.keys(otherFields).forEach((key) => {
+      if (otherFields[key] !== undefined) {
+        updateFields[key] = otherFields[key];
+      }
+    });
+
     const project = await Project.findOneAndUpdate(
-      { _id: projId, ownerId: uid },
-      { selected_branch },
+      { _id: id || req.params.id, ownerId: uid },
+      updateFields,
       { new: true }
     );
-    res.status(200).send({ success: true, message: "Selected branch updated", project });
-  }
 
-  static async updateDetails(req: Request, res: Response) {
-    const uid = (req as any).user?.id || (req as any).user?._id;
-    const { id, name, description, logo_url } = req.body;
-    const fields = Object.fromEntries(
-      Object.entries({ name, description, logo_url }).filter(([_, v]) => v !== undefined)
-    );
-    const project = await Project.findOneAndUpdate({ _id: id, ownerId: uid }, fields, {
-      new: true,
+    res.status(200).send({
+      success: true,
+      message: "Project updated successfully",
+      project,
     });
-    res.status(200).send({ success: true, message: "Project details updated", project });
   }
   static async deleteProject(req: Request, res: Response) {
     const uid = (req as any).user?.id || (req as any).user?._id;
@@ -94,10 +91,54 @@ export class ProjectController {
 
   static async fetchProjectFilesById(req: Request, res: Response) {
     const { id } = req.params;
-    const project = await Project.findById(id);
-    if (!project) return res.status(404).send({ success: false, message: "Project not found" });
+    const uid = (req as any).user?.id || (req as any).user?._id;
 
-    // FILEBASE logic removed. Use local file fetch instead.
-    res.status(200).send({ success: true, message: "Project files fetched successfully", project });
+    const project = await Project.findOne({ _id: id, ownerId: uid });
+    const user = await User.findById(uid);
+    const projectPath = path.join(__dirname, "../../uploads/localCopyOfProject", id);
+
+    if (project?.repo_url && user?.accessToken) {
+      await cloneOrPullRepo(
+        project.repo_url,
+        user.accessToken,
+        path.join(__dirname, "../../uploads/localCopyOfProject"),
+        id
+      );
+    }
+
+    const patharray =ProjectController.getAllFilePaths(projectPath, projectPath);
+
+    res.status(200).send({
+      success: true,
+      message: "Project files fetched successfully",
+      project,
+      localPath: { patharray },
+    });
+  }
+
+  private static getAllFilePaths(dirPath: string, basePath: string): string[] {
+    const files: string[] = [];
+
+    try {
+      const items = fs.readdirSync(dirPath);
+
+      for (const item of items) {
+        if (item.startsWith(".")) continue;
+
+        const fullPath = path.join(dirPath, item);
+        const stat = fs.statSync(fullPath);
+
+        if (stat.isDirectory()) {
+          files.push(...this.getAllFilePaths(fullPath, basePath));
+        } else {
+          const relativePath = path.relative(basePath, fullPath).replace(/\\/g, "/");
+          files.push("Files/" + relativePath);
+        }
+      }
+    } catch (error) {
+      console.error("Error reading directory:", error);
+    }
+
+    return files;
   }
 }
