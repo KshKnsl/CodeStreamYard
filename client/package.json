@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "description": "Frontend for CodeStreamYard: Live coding, streaming, and AI-powered code explanations.",
+  "description": "Frontend for CodeStreamYard: Live coding, streaming.",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
