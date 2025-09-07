@@ -28,8 +28,6 @@ interface NewProjectFormProps {
 }
 
 const NewProjectForm: React.FC<NewProjectFormProps> = ({ repository, onBack, onSubmit }) => {
-  const isBlankProject = repository.id === -1;
-
   const [project, setProject] = useState({
     name: repository.name,
     description: repository.description || "",
@@ -49,10 +47,6 @@ const NewProjectForm: React.FC<NewProjectFormProps> = ({ repository, onBack, onS
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
-    if (isBlankProject) {
-      setBranches([]);
-      return;
-    }
     const fetchBranches = async () => {
       setLoading(true);
       try {
@@ -72,7 +66,7 @@ const NewProjectForm: React.FC<NewProjectFormProps> = ({ repository, onBack, onS
       }
     };
     fetchBranches();
-  }, [repository.full_name, repository.default_branch, isBlankProject]);
+  }, [repository.full_name, repository.default_branch]);
 
   const updateField = (field: string, value: string | File | null) => {
     setProject((prev) => ({ ...prev, [field]: value }));
@@ -176,17 +170,15 @@ const NewProjectForm: React.FC<NewProjectFormProps> = ({ repository, onBack, onS
             />
           </div>
 
-          {!isBlankProject && (
-            <div>
-              <Label htmlFor="repo_name">Repository</Label>
-              <Input
-                id="repo_name"
-                value={project.repo_name}
-                className="mt-1 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-purple-900/30"
-                disabled
-              />
-            </div>
-          )}
+          <div>
+            <Label htmlFor="repo_name">Repository</Label>
+            <Input
+              id="repo_name"
+              value={project.repo_name}
+              className="mt-1 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-purple-900/30"
+              disabled
+            />
+          </div>
 
           <div>
             <Label htmlFor="description">Description</Label>
@@ -199,36 +191,34 @@ const NewProjectForm: React.FC<NewProjectFormProps> = ({ repository, onBack, onS
             />
           </div>
 
-          {!isBlankProject && (
-            <div>
-              <Label htmlFor="branch">Branch</Label>
-              <div className="relative mt-1">
-                <select
-                  id="branch"
-                  value={project.selected_branch}
-                  onChange={(e) => updateField("selected_branch", e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#0A0A0A] px-3 py-2 pr-10 focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none"
-                  disabled={loading}>
-                  {loading ? (
-                    <option>Loading branches...</option>
-                  ) : (
-                    branches.map((branch) => (
-                      <option key={branch} value={branch}>
-                        {branch}
-                      </option>
-                    ))
-                  )}
-                </select>
-                <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                  {loading ? (
-                    <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
-                  ) : (
-                    <GitBranch className="w-4 h-4 text-gray-400" />
-                  )}
-                </div>
+          <div>
+            <Label htmlFor="branch">Branch</Label>
+            <div className="relative mt-1">
+              <select
+                id="branch"
+                value={project.selected_branch}
+                onChange={(e) => updateField("selected_branch", e.target.value)}
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#0A0A0A] px-3 py-2 pr-10 focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none"
+                disabled={loading}>
+                {loading ? (
+                  <option>Loading branches...</option>
+                ) : (
+                  branches.map((branch) => (
+                    <option key={branch} value={branch}>
+                      {branch}
+                    </option>
+                  ))
+                )}
+              </select>
+              <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                {loading ? (
+                  <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
+                ) : (
+                  <GitBranch className="w-4 h-4 text-gray-400" />
+                )}
               </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
 

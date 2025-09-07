@@ -42,7 +42,6 @@ const GithubRepoSelector: React.FC<GithubRepoSelectorProps> = ({ onSelect }) => 
     onSelect?.(repo);
   };
 
-  // Load repositories when component mounts
   useEffect(() => {
     if (githubConnected) {
       loadRepositories();
@@ -132,7 +131,6 @@ const GithubRepoSelector: React.FC<GithubRepoSelectorProps> = ({ onSelect }) => 
         commitHistory: data.url + "/commits",
       };
 
-      // Add to the top of the list and select it
       setRepoList((prevList) => [repoData, ...prevList.filter((r) => r.id !== repoData.id)]);
       handleRepoSelect(repoData);
       setRepoUrl("");
@@ -149,12 +147,8 @@ const GithubRepoSelector: React.FC<GithubRepoSelectorProps> = ({ onSelect }) => 
       repo.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Always show the public repo fetch UI and blank project button
-  // Only show repo list/search if githubConnected
-
   return (
     <div className="space-y-6">
-      {/* Add public repo via URL */}
       <div className="space-y-2">
         <div className="relative flex items-center gap-2">
           <input
@@ -172,30 +166,8 @@ const GithubRepoSelector: React.FC<GithubRepoSelectorProps> = ({ onSelect }) => 
             Add Repo
           </Button>
         </div>
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={() =>
-            onSelect?.({
-              id: -1,
-              name: "Blank Project",
-              full_name: "blank",
-              private: false,
-              description: "Start a blank project",
-              html_url: "",
-              languageUrl: "",
-              default_branch: "main",
-              branches_url: "",
-              url: "",
-              avatar_url: undefined,
-              commitHistory: "",
-            })
-          }>
-          Start a Blank Project
-        </Button>
       </div>
 
-      {/* Show repo list/search only if connected */}
       {githubConnected ? (
         <>
           <input

@@ -8,7 +8,7 @@ import { UserCircle2, Github, User, CalendarDays, CheckCircle2 } from "lucide-re
 const SERVER_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:3000";
 
 const Setting = () => {
-  const { user, refreshUser } = useAuth();
+  const { user } = useAuth();
   const [displayName, setDisplayName] = useState(user?.displayName || "");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(user?.avatar || null);
@@ -50,8 +50,7 @@ const Setting = () => {
         throw new Error(errorData.error || "Failed to update profile");
       }
 
-      await refreshUser();
-      setSuccess("Profile updated successfully!");
+      setSuccess("Profile updated successfully! Please refresh the page to see changes.");
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -270,15 +269,6 @@ const Setting = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2 text-sm">
                     <User className="w-4 h-4 text-gray-500" />
-                    <span className="text-gray-600 dark:text-gray-400">Provider</span>
-                  </div>
-                  <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">
-                    {user?.provider || "-"}
-                  </p>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2 text-sm">
-                    <User className="w-4 h-4 text-gray-500" />
                     <span className="text-gray-600 dark:text-gray-400">Email</span>
                   </div>
                   <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">
@@ -300,7 +290,7 @@ const Setting = () => {
                     <span className="text-gray-600 dark:text-gray-400">User ID</span>
                   </div>
                   <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">
-                    {user?._id || user?.id || "-"}
+                    {user?._id || "-"}
                   </p>
                 </div>
               </div>

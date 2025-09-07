@@ -71,17 +71,12 @@ export default function Dashboard() {
 
   const fetchApplications = async () => {
     setLoadingApps(true);
-    try {
       const res = await fetch(`${SERVER_URL}/project/getall`, { credentials: "include" });
       const data = await res.json();
       if (data.success && Array.isArray(data.projects)) {
         setApplications(data.projects);
       }
-    } catch (err) {
-      // Optionally handle error
-    } finally {
       setLoadingApps(false);
-    }
   };
 
   useEffect(() => {
@@ -197,7 +192,6 @@ export default function Dashboard() {
                                 {app.selected_branch}
                               </span>
                             )}
-                            {/* template removed */}
                           </div>
                         </div>
                         <Button
@@ -221,7 +215,6 @@ export default function Dashboard() {
                         <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
                           {app.repo_name}
                         </div>
-                        {/* deploymentLink removed */}
                       </div>
                     </div>
                   ))
