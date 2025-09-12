@@ -16,6 +16,9 @@ import userRoutes from "./routes/user";
 import gitRoutes from "./routes/github";
 import projectRoutes from "./routes/project";
 import utilRoutes from "./routes/util";
+import streamRoutes from "./routes/stream";
+import { Server } from "socket.io";
+import { StreamController } from "./controllers/stream.controller";
 
 dotenv.config();
 mongoose
@@ -25,6 +28,15 @@ mongoose
 
 const app = express();
 const httpServer = createServer(app);
+
+const io = new Server(httpServer, {
+  cors: {
+    origin: true,
+    credentials: true,
+  },
+});
+
+StreamController.io = io;
 
 app.use(
   cors({
@@ -69,7 +81,13 @@ app.use(passport.session());
 configurePassport();
 
 app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-  if (req.path.startsWith("/auth") || req.path === "/" || req.path.startsWith("/files") || req.path.startsWith("/localCopyOfProject")) {
+  if (
+    req.path.startsWith("/auth") ||
+    req.path === "/" ||
+    req.path.startsWith("/files") ||
+    req.path.startsWith("/localCopyOfProject") ||
+    req.path.startsWith("/stream")
+  ) {
     return next();
   }
 
@@ -93,6 +111,7 @@ app.use("/users", userRoutes);
 app.use("/github", gitRoutes);
 app.use("/project", projectRoutes);
 app.use("/util", utilRoutes);
+app.use("/stream", streamRoutes);
 app.get("/", (_req: express.Request, res: express.Response) => {
   res.status(200).json({
     message: "Welcome to CodeStreamYard!",

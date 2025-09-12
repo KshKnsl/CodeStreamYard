@@ -24,10 +24,17 @@ export default function configurePassport(): void {
         clientID: process.env.GITHUB_CLIENT_ID || "",
         clientSecret: process.env.GITHUB_CLIENT_SECRET || "",
         scope: ["user:email", "repo"],
-        passReqToCallback: true
       },
       async (at: string, rt: string, p: any, done: any) => {
-        const email = p.emails[0].value;
+        const email = p.emails?.[0]?.value;
+
+        if (!email) {
+          return done(
+            new Error("Email not available from GitHub. Please make your email public."),
+            null
+          );
+        }
+
         const u = await User.findOne({ email });
 
         if (!u) {

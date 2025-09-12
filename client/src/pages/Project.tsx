@@ -6,6 +6,7 @@ import CodeArea from "../components/CodeArea";
 import Terminal from "../components/Terminal";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "../components/ui/resizable";
 import { Button } from "../components/ui/button";
+import { StreamBar } from "../components/StreamBar";
 const SERVER_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:3000";
 
 const Project = () => {
@@ -55,6 +56,9 @@ const Project = () => {
 
   return (
     <div className="h-full flex flex-col">
+      {/* Stream Bar at the top */}
+      <StreamBar projectId={id || ""} />
+
       {error && (
         <div className="bg-destructive/15 text-destructive px-3 py-1 rounded-md text-sm">
           {error}
